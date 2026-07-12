@@ -13,7 +13,7 @@
       "anchor": "center",
       "color": "#000000",
       "content": "{bundle_count} Premium PNG",
-      "font_family": "Cinzel",
+      "font_family": "design.graffiti.comicsansmsgras",
       "font_size": 88,
       "type": "text",
       "x": 1004,
@@ -24,11 +24,11 @@
       "anchor": "center",
       "color": "#8c3131",
       "content": "{theme_name_title}",
-      "font_family": "Fredoka One",
+      "font_family": "design.graffiti.comicsansmsgras",
       "font_size": 100,
       "type": "text",
       "x": 1008,
-      "y": 1000
+      "y": 1004
     },
     {
       "anchor": "center",

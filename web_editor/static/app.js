@@ -183,6 +183,7 @@ const ctx = el.canvas.getContext("2d");
 // ────────────────────────────────────────────────────────────────────────────
 
 window.addEventListener("DOMContentLoaded", () => {
+  loadLocalFonts();  // Register all asset fonts as @font-face for canvas rendering
   setupEventListeners();
   loadTemplateList();
   fitCanvasToViewport();
@@ -1363,12 +1364,57 @@ function cancelCropping() {
   render();
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Google Fonts Manager
-// ────────────────────────────────────────────────────────────────────────────
+// Set of font families already loaded locally (populated by loadLocalFonts)
+const _loadedLocalFonts = new Set();
 
+/**
+ * Fetches all font files from assets/fonts via the server API and registers
+ * them as @font-face CSS rules so the browser canvas can render them.
+ */
+function loadLocalFonts() {
+  fetch("/api/fonts/list")
+    .then(res => res.json())
+    .then(data => {
+      if (!data.fonts || !data.fonts.length) return;
+      
+      let styleText = "";
+      data.fonts.forEach(font => {
+        _loadedLocalFonts.add(font.family.toLowerCase());
+        styleText += `
+@font-face {
+  font-family: "${font.family}";
+  src: url("${font.url}") format("truetype");
+  font-display: swap;
+}
+`;
+      });
+      
+      const styleEl = document.createElement("style");
+      styleEl.id = "local-fonts-styles";
+      styleEl.textContent = styleText;
+      document.head.appendChild(styleEl);
+      
+      console.log(`Loaded ${data.fonts.length} local fonts for canvas rendering.`);
+      
+      // Re-render after fonts are registered so canvas text updates
+      setTimeout(() => render(), 300);
+    })
+    .catch(err => console.error("Failed to load local fonts:", err));
+}
+
+/**
+ * Injects a Google Fonts stylesheet for fonts NOT available locally.
+ * Skips fonts that were already registered via loadLocalFonts().
+ */
 function injectGoogleFontStylesheet(fontName) {
-  if (!fontName || fontName.startsWith("Outfit")) return;
+  if (!fontName) return;
+  
+  // Skip if this font is already loaded locally from assets/fonts
+  const cleanName = fontName.replace(/\s+/g, "").replace(/-/g, "").toLowerCase();
+  for (const local of _loadedLocalFonts) {
+    const localClean = local.replace(/\s+/g, "").replace(/-/g, "").toLowerCase();
+    if (localClean === cleanName) return;
+  }
   
   const linkId = `gfont-${fontName.replace(/\s+/g, "-").toLowerCase()}`;
   if (document.getElementById(linkId)) return;

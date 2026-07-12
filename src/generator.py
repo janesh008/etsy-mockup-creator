@@ -72,10 +72,7 @@ class Generator:
                     if not indexed_images.get("character"):
                         print(f"  [Skipped] Hero needs at least character images. Skipping.")
                         continue
-                    # Fill missing combo/prop slots with character images as fallback
-                    for cat in missing_categories:
-                        indexed_images[cat] = list(indexed_images["character"])
-                        print(f"  [Hero Fallback] Using 'character' images for missing '{cat}' pool.")
+                    # Renderer.render_template() handles filling missing slots with character images
                 else:
                     print(f"  [Skipped] Template '{template_name}' requires categories {missing_categories} which are empty or missing. Skipping generation.")
                     continue

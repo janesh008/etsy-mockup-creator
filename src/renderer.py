@@ -96,6 +96,13 @@ class Renderer:
         
         for cat, unique_indices in template_mappings.items():
             cat_images = indexed_images.get(cat, [])
+            
+            if not cat_images and is_hero:
+                # Apply hero fallback: if combo/prop slot is empty, fill with character images
+                cat_images = indexed_images.get("character", [])
+                if cat_images:
+                    print(f"  [Renderer Hero Fallback] Using 'character' pool for missing '{cat}' slots.")
+                    
             if not cat_images:
                 continue
             sorted_indices = sorted(list(unique_indices))

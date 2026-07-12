@@ -22,7 +22,7 @@ class TextRenderer:
                     return ImageFont.truetype(direct_ttf, size)
             
             # 3. Try searching in assets/fonts/
-            fonts_dir = os.path.join("assets", "fonts")
+            fonts_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "assets", "fonts"))
             if os.path.exists(fonts_dir):
                 # Try raw name
                 assets_path = os.path.join(fonts_dir, font_path_or_name)

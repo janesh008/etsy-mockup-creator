@@ -279,6 +279,38 @@ def download_font():
     except Exception as e:
         return jsonify({"error": f"Failed to download Google Font: {str(e)}"}), 500
 
+
+@app.route("/api/fonts/list", methods=["GET"])
+def list_local_fonts():
+    """Returns a list of all font files available in assets/fonts."""
+    fonts_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "assets", "fonts"))
+    if not os.path.isdir(fonts_dir):
+        return jsonify({"fonts": []})
+    
+    fonts = []
+    for entry in os.scandir(fonts_dir):
+        if entry.is_file() and entry.name.lower().endswith((".ttf", ".otf")):
+            name_no_ext = os.path.splitext(entry.name)[0]
+            fonts.append({
+                "filename": entry.name,
+                "family": name_no_ext,
+                "url": f"/api/fonts/file/{entry.name}"
+            })
+    return jsonify({"fonts": sorted(fonts, key=lambda x: x["family"])})
+
+
+@app.route("/api/fonts/file/<filename>", methods=["GET"])
+def serve_font_file(filename):
+    """Serves a font file from assets/fonts for browser @font-face usage."""
+    fonts_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "assets", "fonts"))
+    font_path = os.path.join(fonts_dir, filename)
+    
+    if not os.path.exists(font_path):
+        return "Font not found", 404
+    
+    mimetype = "font/ttf" if filename.lower().endswith(".ttf") else "font/otf"
+    return send_file(font_path, mimetype=mimetype)
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Mockup Generation / Preview
 # ─────────────────────────────────────────────────────────────────────────────
@@ -318,7 +350,12 @@ def generate_mockups():
         indexed_images = ImageLoader.load_theme_images(MASTER_DIR)
         
         # Perform rendering
-        canvas = Renderer.render_template(template_data, theme_name, indexed_images)
+        canvas = Renderer.render_template(
+            template_data, 
+            theme_name, 
+            indexed_images,
+            template_name=template_filename
+        )
         
         # Save output
         output_filename = os.path.splitext(template_filename)[0].capitalize() + ".png"
