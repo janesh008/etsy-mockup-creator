@@ -15,7 +15,9 @@ class Generator:
         """
         # Resolve theme name from folder name
         theme_folder_name = os.path.basename(os.path.normpath(theme_dir))
-        theme_name = theme_folder_name.replace("_", " ")
+        import re
+        clean_name = re.sub(r'[\s_\-]*\d+$', '', theme_folder_name)
+        theme_name = clean_name.replace("_", " ")
 
         print(f"Starting Etsy Mockup Generation for Theme: '{theme_name}'")
         print(f"Loading images from: {theme_dir}")

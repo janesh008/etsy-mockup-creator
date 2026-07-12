@@ -342,7 +342,9 @@ def generate_mockups():
         
         # Run Generator for this single file
         theme_folder_name = os.path.basename(os.path.normpath(MASTER_DIR))
-        theme_name = theme_folder_name.replace("_", " ")
+        import re
+        clean_name = re.sub(r'[\s_\-]*\d+$', '', theme_folder_name)
+        theme_name = clean_name.replace("_", " ")
         
         from src.image_loader import ImageLoader
         from src.renderer import Renderer
