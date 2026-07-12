@@ -60,4 +60,29 @@ class ImageLoader:
         for cat in indexed_images:
             indexed_images[cat].sort()
 
+        # --- Build aggregate category pools for hero template compatibility ---
+        # The hero template uses abstract names like "character", "combo", "prop"
+        # but files use fine-grained names like "main_character", "character_combo_2", etc.
+        # This step merges them into unified pools so the hero template can resolve images.
+        AGGREGATE_MAP = {
+            "character": [
+                "main_character",
+                "sub_character_1", "sub_character_2", "sub_character_3",
+                "sub_character_4", "sub_character_5", "sub_character_6",
+                "sub_character_7", "sub_character_8",
+            ],
+            "combo": [
+                "character_combo_2", "character_combo_3",
+                "character_combo_4", "character_combo_full_group",
+            ],
+        }
+
+        for agg_name, source_cats in AGGREGATE_MAP.items():
+            if agg_name not in indexed_images:  # don't overwrite if already exists
+                pool = []
+                for src in source_cats:
+                    pool.extend(indexed_images.get(src, []))
+                if pool:
+                    indexed_images[agg_name] = sorted(pool)
+
         return indexed_images

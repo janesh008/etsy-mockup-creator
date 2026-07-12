@@ -1,4 +1,5 @@
 import os
+import random
 from typing import Any, Dict, List
 from PIL import Image, ImageDraw
 from src.effects import Effects
@@ -43,7 +44,8 @@ class Renderer:
         theme_name: str,
         indexed_images: Dict[str, List[str]],
         assets_dir: str = "assets",
-        category_pointers: Dict[str, int] = None
+        category_pointers: Dict[str, int] = None,
+        template_name: str = ""
     ) -> Image.Image:
         """
         Renders a mockup image according to the template schema.
@@ -90,17 +92,36 @@ class Renderer:
                 template_mappings[cat].add(idx)
                 
         resolved_mappings = {}
+        is_hero = template_name.lower().startswith("hero") or "hero" in template_name.lower()
+        
         for cat, unique_indices in template_mappings.items():
             cat_images = indexed_images.get(cat, [])
             if not cat_images:
                 continue
             sorted_indices = sorted(list(unique_indices))
-            pointer = category_pointers.get(cat, 0)
             
-            for i, idx in enumerate(sorted_indices):
-                resolved_mappings[(cat, idx)] = cat_images[(pointer + i) % len(cat_images)]
+            if is_hero:
+                # --- HERO MODE: Random selection from the FULL pool ---
+                # Pick unique random images (no duplicates within this template)
+                # Reset is intentional: hero should access ALL images, not just leftovers
+                num_needed = len(sorted_indices)
+                if num_needed <= len(cat_images):
+                    selected = random.sample(cat_images, num_needed)
+                else:
+                    # More slots than images: pick all, then fill remaining randomly
+                    selected = list(cat_images)
+                    remaining = num_needed - len(cat_images)
+                    selected.extend(random.choices(cat_images, k=remaining))
                 
-            category_pointers[cat] = (pointer + len(sorted_indices)) % len(cat_images)
+                for i, idx in enumerate(sorted_indices):
+                    resolved_mappings[(cat, idx)] = selected[i]
+                # Hero does NOT advance category_pointers (it's independent)
+            else:
+                # --- STANDARD MODE: Sequential pointer-based selection ---
+                pointer = category_pointers.get(cat, 0)
+                for i, idx in enumerate(sorted_indices):
+                    resolved_mappings[(cat, idx)] = cat_images[(pointer + i) % len(cat_images)]
+                category_pointers[cat] = (pointer + len(sorted_indices)) % len(cat_images)
 
         # 2. Render each element
         for element in elements:

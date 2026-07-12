@@ -55,7 +55,7 @@ class Generator:
             output_filename = os.path.splitext(template_file)[0].capitalize() + ".png"
             output_path = os.path.join(output_dir, output_filename)
             
-            # --- 2. Strict Empty Category Validation (Skip Generation) ---
+            # --- 2. Category Validation with Hero Fallback ---
             elements = template.get("elements", [])
             required_categories = set()
             for elem in elements:
@@ -65,9 +65,20 @@ class Generator:
                         required_categories.add(cat)
             
             missing_categories = [cat for cat in required_categories if not indexed_images.get(cat)]
+
             if missing_categories:
-                print(f"  [Skipped] Template '{template_name}' requires categories {missing_categories} which are empty or missing. Skipping generation.")
-                continue
+                # Hero template gets special fallback treatment
+                if template_file.lower() == "hero.json":
+                    if not indexed_images.get("character"):
+                        print(f"  [Skipped] Hero needs at least character images. Skipping.")
+                        continue
+                    # Fill missing combo/prop slots with character images as fallback
+                    for cat in missing_categories:
+                        indexed_images[cat] = list(indexed_images["character"])
+                        print(f"  [Hero Fallback] Using 'character' images for missing '{cat}' pool.")
+                else:
+                    print(f"  [Skipped] Template '{template_name}' requires categories {missing_categories} which are empty or missing. Skipping generation.")
+                    continue
 
             print(f"Generating mockup '{template_name}' -> {output_filename}...")
             
@@ -77,7 +88,8 @@ class Generator:
                     template, 
                     theme_name, 
                     indexed_images, 
-                    category_pointers=category_pointers
+                    category_pointers=category_pointers,
+                    template_name=template_file
                 )
                 canvas.save(output_path, "PNG")
                 print(f"  [Success] Saved to {output_path}")
