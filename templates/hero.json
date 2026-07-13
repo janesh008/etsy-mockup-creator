@@ -12,12 +12,12 @@
       "align": "center",
       "anchor": "center",
       "color": "#000000",
-      "content": "{bundle_count} Premium PNG",
+      "content": "{bundle_count} ",
       "font_family": "design.graffiti.comicsansmsgras",
       "font_size": 88,
       "type": "text",
-      "x": 1004,
-      "y": 884
+      "x": 1023,
+      "y": 851
     },
     {
       "align": "center",
@@ -27,8 +27,8 @@
       "font_family": "design.graffiti.comicsansmsgras",
       "font_size": 100,
       "type": "text",
-      "x": 1008,
-      "y": 1004
+      "x": 1000,
+      "y": 1067
     },
     {
       "anchor": "center",
@@ -302,6 +302,17 @@
       "width": 254,
       "x": 1448,
       "y": 1255
+    },
+    {
+      "type": "text",
+      "content": "Premium PNGs",
+      "x": 1022,
+      "y": 945,
+      "font_family": "design.graffiti.comicsansmsgras",
+      "font_size": 72,
+      "color": "#000000",
+      "anchor": "center",
+      "align": "center"
     }
   ],
   "name": "New Template"
