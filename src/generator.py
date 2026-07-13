@@ -14,8 +14,9 @@ class Generator:
         Runs the mockup generator for all templates against a theme folder.
         """
         # Resolve theme name from folder name
-        theme_folder_name = os.path.basename(os.path.normpath(theme_dir))
+        from pathlib import Path
         import re
+        theme_folder_name = Path(theme_dir).parent.name
         clean_name = re.sub(r'[\s_\-]*\d+$', '', theme_folder_name)
         theme_name = clean_name.replace("_", " ")
 
