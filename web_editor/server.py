@@ -341,8 +341,16 @@ def generate_mockups():
         os.makedirs(output_dir, exist_ok=True)
         
         # Run Generator for this single file
-        theme_folder_name = os.path.basename(os.path.normpath(MASTER_DIR))
+        from pathlib import Path
         import re
+        
+        path_obj = Path(MASTER_DIR)
+        theme_folder_name = path_obj.name
+        
+        # If the selected folder is a known subfolder, use its parent name instead
+        if theme_folder_name.lower() in ("processed_bg", "misc_category", "scen-pattern"):
+            theme_folder_name = path_obj.parent.name
+            
         clean_name = re.sub(r'[\s_\-]*\d+$', '', theme_folder_name)
         theme_name = clean_name.replace("_", " ")
         

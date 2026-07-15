@@ -304,15 +304,15 @@
       "y": 1255
     },
     {
-      "type": "text",
+      "align": "center",
+      "anchor": "center",
+      "color": "#000000",
       "content": "Premium PNGs",
-      "x": 1022,
-      "y": 945,
       "font_family": "design.graffiti.comicsansmsgras",
       "font_size": 72,
-      "color": "#000000",
-      "anchor": "center",
-      "align": "center"
+      "type": "text",
+      "x": 1022,
+      "y": 945
     }
   ],
   "name": "New Template"

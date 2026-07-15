@@ -199,8 +199,11 @@ class Renderer:
             elif elem_type == "text":
                 content = element.get("content", "")
                 
-                # Calculate bundle count
-                bundle_count = str(sum(len(imgs) for imgs in indexed_images.values()))
+                # Calculate bundle count (unique images only, skipping duplicates from aggregate pools)
+                unique_images = set()
+                for imgs in indexed_images.values():
+                    unique_images.update(imgs)
+                bundle_count = str(len(unique_images))
                 
                 # Variable interpolation
                 content = content.replace("{theme_name_title}", theme_name.title())
