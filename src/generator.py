@@ -21,7 +21,7 @@ class Generator:
         theme_folder_name = path_obj.name
         
         # If the selected folder is a known subfolder, use its parent name instead
-        if theme_folder_name.lower() in ("processed_bg", "misc_category", "scen-pattern"):
+        if theme_folder_name.lower() in ("processed_no_bg", "processed no bg", "processed-no-bg", "misc_category", "scen-pattern"):
             theme_folder_name = path_obj.parent.name
             
         clean_name = re.sub(r'[\s_\-]*\d+$', '', theme_folder_name)
